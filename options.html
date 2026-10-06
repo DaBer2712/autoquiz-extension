@@ -115,11 +115,123 @@
       </div>
     </div>
     <div class="field">
+      <label for="blankSeparator">填空多空答案分隔符</label>
+      <input type="text" id="blankSeparator" placeholder="," />
+      <div class="hint">LLM 返回多空答案时按该分隔符拆分逐空填入，默认英文逗号。</div>
+    </div>
+    <div class="field">
       <div class="checkbox">
         <input type="checkbox" id="autoFill" checked />
         <label for="autoFill" style="margin-bottom:0">获取答案后自动填写</label>
       </div>
       <div class="hint">关闭后仅返回答案，不自动点选/写入。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>兜底题库</h2>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="qbEnabled" />
+        <label for="qbEnabled" style="margin-bottom:0">启用题库接口兜底</label>
+      </div>
+      <div class="hint">LLM 无法作答（返回空）时自动调用下方接口查题，参考 OCS AnswererWrapper 模式。</div>
+    </div>
+    <div class="field">
+      <label for="qbUrl">接口 URL（模板）</label>
+      <input type="text" id="qbUrl" placeholder="https://example.com/search?title=${title}" />
+      <div class="hint">支持 ${title} / ${options} / ${type} 占位符，值自动 URL 编码。</div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="qbMethod">请求方式</label>
+        <select id="qbMethod">
+          <option value="POST">POST</option>
+          <option value="GET">GET</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="qbTimeout">超时（秒）</label>
+        <input type="number" id="qbTimeout" min="1" max="120" step="1" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="qbHeaders">请求头（JSON）</label>
+      <input type="text" id="qbHeaders" placeholder='{"Content-Type":"application/json"}' />
+    </div>
+    <div class="field">
+      <label for="qbDataTemplate">请求体模板（POST 为 body / GET 为 query 参数，JSON）</label>
+      <input type="text" id="qbDataTemplate" placeholder='{"title":"${title}"}' />
+    </div>
+    <div class="field">
+      <label for="qbParseHandler">响应解析函数</label>
+      <textarea id="qbParseHandler" rows="4" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:Consolas,monospace;outline:none;"></textarea>
+      <div class="hint">返回一个函数，接收响应体（已尝试 JSON.parse），返回 [question, answer] 或 { answer }；默认取 data.answer / data.answers。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>答案缓存</h2>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="cacheEnabled" checked />
+        <label for="cacheEnabled" style="margin-bottom:0">启用题目答案缓存</label>
+      </div>
+      <div class="hint">同一套卷子（题目内容 hash 作为 key）重复作答直接复用上次答案，跳过 API 调用；存 chrome.storage.local。</div>
+    </div>
+    <div class="field">
+      <div id="cacheStats" class="hint">缓存条目：-</div>
+    </div>
+    <div class="btn-row">
+      <button id="clearCacheBtn" class="btn-ghost">清空答案缓存</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>共享题库（云端多用户）</h2>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="sbEnabled" />
+        <label for="sbEnabled" style="margin-bottom:0">启用共享题库</label>
+      </div>
+      <div class="hint">答题前先查共享题库，命中则直接使用答案（省 LLM token）；答题后自动上传答案，回顾页回馈官方正确答案（最高权重）。</div>
+    </div>
+    <div class="field">
+      <label for="sbBaseUrl">服务端地址</label>
+      <input type="text" id="sbBaseUrl" placeholder="http://127.0.0.1:3000" />
+      <div class="hint">自托管服务端地址，需先运行 autoquiz-shared-bank-server/server.js（详见 README-server.md）。</div>
+    </div>
+    <div class="field">
+      <label for="sbToken">共享 Token</label>
+      <input type="password" id="sbToken" placeholder="服务端启动日志中的 SHARED_TOKEN" autocomplete="off" />
+      <div class="hint">与服务端 config.json / 环境变量 SHARED_TOKEN 保持一致。</div>
+    </div>
+    <div class="field">
+      <label for="sbMinVotes">最低票数（非官方答案）</label>
+      <input type="number" id="sbMinVotes" min="1" max="99" value="2" />
+      <div class="hint">共享题库中非官方来源的答案需要达到该票数才会被采用，防止单次错误答案污染；官方答案不受此限制。</div>
+    </div>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="sbUploadOnAnswer" checked />
+        <label for="sbUploadOnAnswer" style="margin-bottom:0">答题后上传 LLM 答案</label>
+      </div>
+      <div class="hint">每次答题后把题目 + AI 答案上传到共享题库（失败自动进入重试队列）。</div>
+    </div>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="sbUploadOnFeedback" checked />
+        <label for="sbUploadOnFeedback" style="margin-bottom:0">回顾页回馈官方正确答案</label>
+      </div>
+      <div class="hint">在平台答案回馈/回顾页自动解析官方正确答案并上传（最高权重，幂等去重）。</div>
+    </div>
+    <div class="btn-row">
+      <button id="sbTestBtn" class="btn-ghost">测试连接</button>
+      <button id="sbFlushBtn" class="btn-ghost">重试上传队列</button>
+      <button id="sbClearQueueBtn" class="btn-ghost">清空上传队列</button>
+    </div>
+    <div class="field">
+      <div id="sbQueueInfo" class="hint">上传队列：-</div>
     </div>
   </div>
 
@@ -129,6 +241,8 @@
   </div>
   <div id="status"></div>
 
+  <script src="lib/cache.js"></script>
+  <script src="lib/shared-bank.js"></script>
   <script src="options.js"></script>
 </body>
 </html>
