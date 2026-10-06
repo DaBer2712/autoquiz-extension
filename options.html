@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoQuiz 智能答题助手 - 设置</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --bg: #f3f4f6;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      min-width: 420px;
+    }
+    .header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .header img { width: 32px; height: 32px; border-radius: 6px; }
+    .header h1 { font-size: 18px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 14px; color: var(--muted); margin-bottom: 12px; font-weight: 600; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 13px; margin-bottom: 5px; color: var(--text); }
+    .field input, .field select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--primary); }
+    .field .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .row { display: flex; gap: 12px; }
+    .row .field { flex: 1; }
+    .btn-row { display: flex; gap: 10px; margin-top: 4px; }
+    button {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-ghost { background: #e5e7eb; color: var(--text); }
+    .btn-ghost:hover { background: #d1d5db; }
+    #status {
+      margin-top: 10px;
+      font-size: 13px;
+      min-height: 18px;
+    }
+    #status.ok { color: #16a34a; }
+    #status.err { color: #dc2626; }
+    .checkbox { display: flex; align-items: center; gap: 8px; }
+    .checkbox input { width: auto; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon128.png" alt="AutoQuiz" />
+    <h1>AutoQuiz 智能答题助手</h1>
+  </div>
+
+  <div class="card">
+    <h2>DeepSeek API 配置</h2>
+    <div class="field">
+      <label for="apiKey">API Key</label>
+      <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+      <div class="hint">在 <a href="https://platform.deepseek.com/" target="_blank">platform.deepseek.com</a> 申请，仅保存在浏览器本地（chrome.storage.sync）。</div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label for="model">模型名</label>
+        <input type="text" id="model" placeholder="deepseek-chat" />
+      </div>
+      <div class="field">
+        <label for="apiUrl">API 地址</label>
+        <input type="text" id="apiUrl" placeholder="https://api.deepseek.com/chat/completions" />
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>答题策略</h2>
+    <div class="row">
+      <div class="field">
+        <label for="batchSize">每批题目数</label>
+        <input type="number" id="batchSize" min="1" max="50" step="1" />
+        <div class="hint">越小越稳，越大越快。超时报错时请调小。</div>
+      </div>
+      <div class="field">
+        <label for="speedLevel">答题速度档位</label>
+        <select id="speedLevel">
+          <option value="slow">慢速（1.0~2.5s/题）</option>
+          <option value="normal">中速（0.5~1.5s/题）</option>
+          <option value="fast">快速（0.15~0.5s/题）</option>
+        </select>
+        <div class="hint">模拟人工点击节奏，过快可能触发学习通风控。</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="checkbox">
+        <input type="checkbox" id="autoFill" checked />
+        <label for="autoFill" style="margin-bottom:0">获取答案后自动填写</label>
+      </div>
+      <div class="hint">关闭后仅返回答案，不自动点选/写入。</div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button id="saveBtn" class="btn-primary">保存设置</button>
+    <button id="resetBtn" class="btn-ghost">恢复默认</button>
+  </div>
+  <div id="status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

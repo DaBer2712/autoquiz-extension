@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoQuiz 智能答题助手</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      width: 300px;
+      padding: 16px;
+      color: var(--text);
+    }
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .header img { width: 28px; height: 28px; border-radius: 6px; }
+    .header h1 { font-size: 15px; font-weight: 600; }
+    .status-box {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      margin-bottom: 12px;
+      background: #f9fafb;
+    }
+    .status-box .label { color: var(--muted); margin-bottom: 4px; }
+    .status-box .value { word-break: break-all; }
+    .status-box.ok .value { color: #16a34a; }
+    .status-box.warn .value { color: #d97706; }
+    .actions { display: flex; flex-direction: column; gap: 8px; }
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+    .btn-secondary { background: #e5e7eb; color: var(--text); }
+    .btn-secondary:hover { background: #d1d5db; }
+    .footer { margin-top: 12px; font-size: 11px; color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon128.png" alt="AutoQuiz" />
+    <h1>AutoQuiz 智能答题助手</h1>
+  </div>
+
+  <div id="configStatus" class="status-box warn">
+    <div class="label">DeepSeek 配置</div>
+    <div class="value">正在读取…</div>
+  </div>
+
+  <div class="actions">
+    <button id="startBtn" class="btn-primary" disabled>在当前页开始AI答题</button>
+    <button id="openOptionsBtn" class="btn-secondary">打开设置页</button>
+  </div>
+
+  <div class="footer">仅支持超星学习通考试/作业页 · MV3 · 数据保存在本地</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

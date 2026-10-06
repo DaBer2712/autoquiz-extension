@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "AutoQuiz 智能答题助手",
+  "version": "1.0.0",
+  "description": "自动抓取超星学习通/雨课堂考试作业题目，调用 DeepSeek 等国内大模型智能作答并自动填写。",
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.chaoxing.com/*",
+    "https://*.yuketang.cn/*",
+    "https://examination.xuetangx.com/*",
+    "https://api.deepseek.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.chaoxing.com/*/work*",
+        "https://*.chaoxing.com/*/mooc2/work*",
+        "https://*.chaoxing.com/*/exam*",
+        "https://*.chaoxing.com/*/mooc2/exam*",
+        "https://*.chaoxing.com/*/mooc2/test*",
+        "https://*.yuketang.cn/*",
+        "https://examination.xuetangx.com/*"
+      ],
+      "js": [
+        "lib/types.js",
+        "lib/adapters/chaoxing.js",
+        "lib/adapters/rain-classroom.js",
+        "lib/adapters/index.js",
+        "lib/extractor.js",
+        "lib/filler.js",
+        "content.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "AutoQuiz 智能答题助手"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
